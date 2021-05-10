@@ -91,8 +91,6 @@ let PlayPause = (function() {
       if (playlist != null && song != null) {
         handleSongInPlaylistPlayPause(playlist, song);
       }
-
-      ConfigState.setPlayerState();
     }
   }
 
@@ -147,7 +145,8 @@ let PlayPause = (function() {
         AudioNavigation.changeSongPlaylist(
           playlist,
           config.playlists[playlist].shuffle_list[0],
-          0
+          0,
+          true
         );
       } else {
         AudioNavigation.changeSongPlaylist(
@@ -202,7 +201,7 @@ let PlayPause = (function() {
       /*
 				We then change the song to the index selected.
 			*/
-      AudioNavigation.changeSong(config.songs[song], song);
+      AudioNavigation.changeSong(config.songs[song], song, true);
     }
 
     /*
@@ -216,7 +215,7 @@ let PlayPause = (function() {
 				The song selected is different, so we change the
 				song.
 			*/
-      AudioNavigation.changeSong(config.songs[song], song);
+      AudioNavigation.changeSong(config.songs[song], song, true);
     }
 
     /*
@@ -268,7 +267,8 @@ let PlayPause = (function() {
       AudioNavigation.changeSongPlaylist(
         playlist,
         config.playlists[playlist].songs[song],
-        song
+        song,
+        true
       );
     }
 
@@ -286,7 +286,8 @@ let PlayPause = (function() {
       AudioNavigation.changeSongPlaylist(
         playlist,
         config.playlists[playlist].songs[song],
-        song
+        song,
+        true
       );
     }
 

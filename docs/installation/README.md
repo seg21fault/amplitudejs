@@ -1,5 +1,5 @@
 ---
-title: Debug Mode - AmplitudeJS Documentation
+title: Installation - AmplitudeJS Documentation
 meta:
   - name: description
     content: Amplitude.js is the HTML5 audio player for the modern era. Using no dependencies, take control of the browser and design a web audio player the way you want it to look.
@@ -12,7 +12,7 @@ meta:
   - name: og:description
     content: Amplitude.js is the open source HTML5 audio player for the modern era. Using no dependencies, take control of the browser and design an audio player the way you want it to look.
   - name: og:url
-    content: https://521dimensions.com/open-source/amplitudejs/docs/configuration/debug.html
+    content: https://521dimensions.com/open-source/amplitudejs/docs/installation/
   - name: og:site_name
     content: Amplitude.js
   - name: og:image
@@ -34,23 +34,27 @@ meta:
   - name: creator
     content: "@521dimensions"
 ---
-
-# Debug Mode
+# Installation
 <carbon-ads/>
-Debug mode outputs verbose updates when Amplitude actions take place to see the
-current config and statuses of the AmplitudeJS player. To turn on AmplitudeJS
-debug mode you can set it in the config or call:
+## Option 1: Use CDN from [jsDelivr](https://cdn.jsdelivr.net/npm/amplitudejs/)
+No installation is required to use Amplitude.js. All you need to do is include a single line in your `<head>` section of your HTML page.
 
-## Config
+Replace `{{'version-number'}}` with the exact version number that you would like to use (see [our releases](https://github.com/521dimensions/amplitudejs/releases) for what version number to use):
+```html
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/amplitudejs@{{version-number}}/dist/amplitude.js"></script>
+```
+**NOTE:** It's best to set your version number manually to make sure you have full control of what version you are running. If you need to upgrade in the future, just change `{{'version-number'}}` to the latest version.
 
-```javascript
-  Amplitude.init({
-    songs: [...],
-    debug: true
-  })
+
+## Option 2: Automatic install via `npm`
+Download it via NPM to your existing project:
+```sh
+npm install --save amplitudejs
 ```
 
-## Method
-```javascript
-  Amplitude.setDebug( true );
-```
+You will see the file under `node_modules/amplitudejs/dist/amplitude.js`.
+
+## Option 3: Manual download
+Download the `amplitude.js` file from [our releases page](https://github.com/521dimensions/amplitudejs/releases) and include the file manually with your project.
+
+Amplitude.js is now available for use! All that's left is [initializing &rarr;](https://521dimensions.com/open-source/amplitudejs/docs/installation/initialization).

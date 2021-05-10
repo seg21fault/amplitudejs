@@ -1,5 +1,5 @@
 ---
-title: Setting Default Art - AmplitudeJS Documentation
+title: Initialization - AmplitudeJS Documentation
 meta:
   - name: description
     content: Amplitude.js is the HTML5 audio player for the modern era. Using no dependencies, take control of the browser and design a web audio player the way you want it to look.
@@ -12,7 +12,7 @@ meta:
   - name: og:description
     content: Amplitude.js is the open source HTML5 audio player for the modern era. Using no dependencies, take control of the browser and design an audio player the way you want it to look.
   - name: og:url
-    content: https://521dimensions.com/open-source/amplitudejs/docs/configuration/default-art.html
+    content: https://521dimensions.com/open-source/amplitudejs/docs/installation/initialization
   - name: og:site_name
     content: Amplitude.js
   - name: og:image
@@ -34,41 +34,38 @@ meta:
   - name: creator
     content: "@521dimensions"
 ---
-
-# Default Art
+# Initializing Amplitude.js
 <carbon-ads/>
-If you have audio that doesn't have a specific piece of album art, you can define
-a default image url using the "default_album_art" key. The value can be set on initialization or through a public method. You can also set the default playlist art for metadata. If you don't define a piece of album art for your playlist you can also set that on initialization through the "default_playlist_art" key or through a public method.
+To initialize Amplitude.js, you must call the `Amplitude.init()` method and pass in an object that contains an array of songs and settings. Amplitude.js will then take care of configuring and setting up your player by finding all of the Amplitude elements (defined later in the docs) and binding the appropriate event handlers.
 
-## Initialization Default Album Art
+To configure Amplitude.js, you need to call the init function on the Amplitude object and you can pass it a JSON object of configuration variables ( we will go through ALL of these in the documentation ). At the bare minimum, you need to pass it all of the song objects that your page will be using. More information about the song object next.
 
 ```javascript
 	Amplitude.init({
-		"songs": [...],
-		"default_album_art": "/url/to/default.jpg"
+		songs: [
+			{
+				"name": "Song Name 1",
+				"artist": "Artist Name",
+				"album": "Album Name",
+				"url": "/song/url.mp3",
+				"cover_art_url": "/cover/art/url.jpg"
+			},
+			{
+				"name": "Song Name 2",
+				"artist": "Artist Name",
+				"album": "Album Name",
+				"url": "/song/url.mp3",
+				"cover_art_url": "/cover/art/url.jpg"
+			},
+			{
+				"name": "Song Name 3",
+				"artist": "Artist Name",
+				"album": "Album Name",
+				"url": "/song/url.mp3",
+				"cover_art_url": "/cover/art/url.jpg"
+			}
+		]
 	});
 ```
 
-## Public Set Method Default Album Art
-
-```javascript
-  Amplitude.setDefaultAlbumArt( "/url/to/default.jpg" );
-```
-
-## Initialization Default Playlist Album Art
-
-```javascript
-  Amplitude.init({
-    "songs": [...],
-    "playlists": {
-      ...
-    },
-    "default_playlist_art": "/url/to/default.jpg"
-  });
-```
-
-## Public Set Method Default Playlist Art
-
-```javascript
-  Amplitude.setDefaultPlaylistArt( "/url/to/default.jpg" );
-```
+This configuration will set up Amplitude.js to work the way you want it. The config JSON is used heavily to configure and optimize Amplitude.js for what your app needs.

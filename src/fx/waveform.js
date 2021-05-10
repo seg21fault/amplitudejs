@@ -14,10 +14,12 @@ let WaveForm = (function() {
     Initialize the local variables used in the Waveform.
   */
   let buffer = "";
-  let sampleRate = config.waveforms.sample_rate;
+  let sampleRate = "";
   let peaks = "";
 
   function init() {
+    sampleRate = config.waveforms.sample_rate;
+
     /*
       Grabs all of the waveform elements on the page.
     */
@@ -434,12 +436,26 @@ let WaveForm = (function() {
     }
   }
 
+  /**
+   * Determines if the user is using waveforms
+   */
+  function determineIfUsingWaveforms() {
+    let waveforms = document.querySelectorAll(".amplitude-wave-form");
+
+    if (waveforms.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /*
     Return the public methods.
   */
   return {
     init: init,
-    build: build
+    build: build,
+    determineIfUsingWaveforms: determineIfUsingWaveforms
   };
 })();
 

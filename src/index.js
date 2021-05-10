@@ -1,7 +1,6 @@
 /**
- * @name 		Amplitude.js
- * @version 4.0.0
- * @author 	Dan Pastori (521 Dimensions) <dan@521dimensions.com>
+ * @name 		AmplitudeJS
+ * @author 	Dan Pastori (Server Side Up) <hello@serversideup.net>
  */
 /**
  * AmplitudeJS Initializer Module
@@ -117,6 +116,12 @@ import PlayPauseElements from "./visual/playPauseElements.js";
  */
 import MetaDataElements from "./visual/metaDataElements.js";
 
+/**
+ * Playback Speed Elements
+ * @module visual/PlaybackSpeedElements
+ */
+import PlaybackSpeedElements from "./visual/playbackSpeedElements.js";
+
 import Debug from "./utilities/debug.js";
 
 import SoundCloud from "./soundcloud/soundcloud.js";
@@ -179,6 +184,30 @@ let Amplitude = (function() {
    */
   function getPlaybackSpeed() {
     return config.playback_speed;
+  }
+
+  /**
+   * Sets the playback speed
+   *
+   * Public Accessor: Amplitude.setPlaybackSpeed( speed )
+   *
+   * @access public
+   */
+  function setPlaybackSpeed(speed) {
+    /*
+      Increments are set in .5 We only accept values
+      1, 1.5, 2
+
+      1 -> Regular Speed
+      1.5 -> 50% faster
+      2 -> Twice as fast
+    */
+    Core.setPlaybackSpeed(speed);
+
+    /*
+      Visually sync the playback speed.
+    */
+    PlaybackSpeedElements.sync();
   }
 
   /**
@@ -324,7 +353,7 @@ let Amplitude = (function() {
    *
    * @access public
    */
-  function getDefaultPlaylistArt(){
+  function getDefaultPlaylistArt() {
     return config.default_playlist_art;
   }
 
@@ -348,9 +377,9 @@ let Amplitude = (function() {
    * @access public
    * @param {string} url - A string representing the URL of the new default playlist art.
    */
-   function setDefaultPlaylistArt(url){
-     config.default_plalist_art = url;
-   }
+  function setDefaultPlaylistArt(url) {
+    config.default_plalist_art = url;
+  }
 
   /**
    * Allows the user to get the percentage of the song played.
@@ -518,6 +547,43 @@ let Amplitude = (function() {
     }
 
     return config.songs.length - 1;
+  }
+
+  /**
+   * Adds a song to the beginning of the config array.
+   * This will allow Amplitude to play the song in a
+   * playlist type setting.
+   *
+   * Public Accessor: Amplitude.addSong( song_json )
+   *
+   * @access public
+   * @param {object} song 	- JSON representation of a song.
+   * @returns {number} New index of the song (0)
+   */
+  function prependSong(song) {
+    /*
+			Ensures we have a songs array to push to.
+		*/
+    if (config.songs == undefined) {
+      config.songs = [];
+    }
+
+    config.songs.unshift(song);
+
+    if (config.shuffle_on) {
+      config.shuffle_list.unshift(song);
+    }
+
+    if (SoundCloud.isSoundCloudURL(song.url)) {
+      SoundCloud.resolveIndividualStreamableURL(
+        song.url,
+        null,
+        config.songs.length - 1,
+        config.shuffle_on
+      );
+    }
+
+    return 0;
   }
 
   /**
@@ -695,10 +761,6 @@ let Amplitude = (function() {
 		*/
     TimeElements.resetDurationTimes();
 
-    /*
-      Sets the state of the player.
-    */
-    ConfigState.setPlayerState();
   }
 
   /**
@@ -735,11 +797,6 @@ let Amplitude = (function() {
 			Play the song
 		*/
     Core.play();
-
-    /*
-      Sets the state of the player.
-    */
-    ConfigState.setPlayerState();
 
     /*
 			Sync all of the play pause buttons.
@@ -792,11 +849,6 @@ let Amplitude = (function() {
 			Play the song
 		*/
     Core.play();
-
-    /*
-			Set the state of the player
-		*/
-    ConfigState.setPlayerState();
   }
 
   /**
@@ -810,8 +862,6 @@ let Amplitude = (function() {
    */
   function play() {
     Core.play();
-
-    ConfigState.setPlayerState();
   }
 
   /**
@@ -825,8 +875,18 @@ let Amplitude = (function() {
    */
   function pause() {
     Core.pause();
+  }
 
-    ConfigState.setPlayerState();
+  /**
+   * Allows the user to stop whatever the active song is directly
+   * through Javascript.
+   *
+   * Public Accessor: Amplitude.stop();
+   *
+   * @access public
+   */
+  function stop() {
+    Core.stop();
   }
 
   /**
@@ -1264,6 +1324,22 @@ let Amplitude = (function() {
     }
   }
 
+  /**
+   * Sets the active volume.
+   * @param {number} volumeLevel - A number between 1 and 100 as a percentage of
+   * min to max for a volume level.
+   */
+  function setVolume(volumeLevel) {
+    Core.setVolume(volumeLevel);
+  }
+
+  /**
+   * Gets the active volume.
+   */
+  function getVolume() {
+    return config.volume;
+  }
+
   /*
 		Returns all of the publically accesible methods.
 	*/
@@ -1273,6 +1349,7 @@ let Amplitude = (function() {
     bindNewElements: bindNewElements,
     getActivePlaylist: getActivePlaylist,
     getPlaybackSpeed: getPlaybackSpeed,
+    setPlaybackSpeed: setPlaybackSpeed,
     getRepeat: getRepeat,
     getRepeatPlaylist: getRepeatPlaylist,
     getShuffle: getShuffle,
@@ -1296,6 +1373,7 @@ let Amplitude = (function() {
     getSongAtIndex: getSongAtIndex,
     getSongAtPlaylistIndex: getSongAtPlaylistIndex,
     addSong: addSong,
+    prependSong: prependSong,
     addSongToPlaylist: addSongToPlaylist,
     removeSong: removeSong,
     removeSongFromPlaylist: removeSongFromPlaylist,
@@ -1304,6 +1382,7 @@ let Amplitude = (function() {
     playPlaylistSongAtIndex: playPlaylistSongAtIndex,
     play: play,
     pause: pause,
+    stop: stop,
     getAudio: getAudio,
     getAnalyser: getAnalyser,
     next: next,
@@ -1326,7 +1405,9 @@ let Amplitude = (function() {
     setPlaylistVisualization: setPlaylistVisualization,
     setSongVisualization: setSongVisualization,
     setSongInPlaylistVisualization: setSongInPlaylistVisualization,
-    setGlobalVisualization: setGlobalVisualization
+    setGlobalVisualization: setGlobalVisualization,
+    getVolume: getVolume,
+    setVolume: setVolume
   };
 })();
 

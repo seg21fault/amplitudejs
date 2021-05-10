@@ -176,6 +176,11 @@ let Initializer = (function() {
     config.debug = userConfig.debug != undefined ? userConfig.debug : false;
 
     /*
+      Set default artwork, if specified.
+    */
+    setArt(userConfig);
+
+    /*
 			Checks to see if the user has songs defined.
 		*/
     if (userConfig.songs) {
@@ -206,69 +211,66 @@ let Initializer = (function() {
 			user wants to use visualizations or not before proceeding.
 		*/
     if (Fx.webAudioAPIAvailable()) {
-      /*
-        Configure the Web Audio API If It's available.
-      */
-     Fx.configureWebAudioAPI();
+      if (Fx.determineUsingAnyFX()) {
+        /*
+          Configure the Web Audio API If It's available.
+        */
+        Fx.configureWebAudioAPI();
 
-     /*
-        Activates the audio context after an event for the user.
-     */
-     document.documentElement.addEventListener(
-      "mousedown", function(){
-        if (config.context.state !== 'running') {
-          config.context.resume();
-        }
-      });
-
-      document.documentElement.addEventListener(
-      "keydown", function(){
-        if (config.context.state !== 'running') {
-          config.context.resume();
-        }
-      });
-
-      document.documentElement.addEventListener(
-        "keyup", function(){
-          if (config.context.state !== 'running') {
+        /*
+            Activates the audio context after an event for the user.
+        */
+        document.documentElement.addEventListener("mousedown", function() {
+          if (config.context.state !== "running") {
             config.context.resume();
           }
-       });
-  
-      
+        });
 
-      /*
-        Set the user waveform settings if provided.
-      */
-      if (
-        userConfig.waveforms != undefined &&
-        userConfig.waveforms.sample_rate != undefined
-      ) {
-        config.waveforms.sample_rate = userConfig.waveforms.sample_rate;
-      }
+        document.documentElement.addEventListener("keydown", function() {
+          if (config.context.state !== "running") {
+            config.context.resume();
+          }
+        });
 
-      /*
-        Initialize the waveform.
-      */
-      WaveForm.init();
+        document.documentElement.addEventListener("keyup", function() {
+          if (config.context.state !== "running") {
+            config.context.resume();
+          }
+        });
 
-      /*
-        If the user is registering visualizations on init,
-        we set them right away.
-      */
-      if (
-        userConfig.visualizations != undefined &&
-        userConfig.visualizations.length > 0
-      ) {
         /*
-              Iterate over all of the visualizations and
-              register them in our player.
-            */
-        for (let i = 0; i < userConfig.visualizations.length; i++) {
-          Visualizations.register(
-            userConfig.visualizations[i].object,
-            userConfig.visualizations[i].params
-          );
+            Set the user waveform settings if provided.
+          */
+        if (
+          userConfig.waveforms != undefined &&
+          userConfig.waveforms.sample_rate != undefined
+        ) {
+          config.waveforms.sample_rate = userConfig.waveforms.sample_rate;
+        }
+
+        /*
+            Initialize the waveform.
+          */
+        WaveForm.init();
+
+        /*
+            If the user is registering visualizations on init,
+            we set them right away.
+          */
+        if (
+          userConfig.visualizations != undefined &&
+          userConfig.visualizations.length > 0
+        ) {
+          /*
+                  Iterate over all of the visualizations and
+                  register them in our player.
+                */
+          for (let i = 0; i < userConfig.visualizations.length; i++) {
+            Visualizations.register(
+              userConfig.visualizations[i].object,
+              userConfig.visualizations[i].params
+            );
+          }
         }
       }
     } else {
@@ -281,6 +283,11 @@ let Initializer = (function() {
       Initialize default live settings
     */
     initializeDefaultLiveSettings();
+
+    /*
+      Initialize default song indexes
+    */
+    initializeDefaultSongIndexes();
 
     /*
 			When the preliminary config is ready, we are ready to proceed.
@@ -487,24 +494,9 @@ let Initializer = (function() {
     Core.setVolume(config.volume);
 
     /*
-			If the user defines default album art, this image will display if the active
-			song doesn't have album art defined.
-		*/
-    if (userConfig.default_album_art != undefined) {
-      config.default_album_art = userConfig.default_album_art;
-    } else {
-      config.default_album_art = "";
-    }
-
-    /*
-			If the user defines default playlist art, this image will display if the user
-			tries to set up a playlist meta data image tag but doesn't have one defined.
-		*/
-    if (userConfig.default_playlist_art != undefined) {
-      config.default_playlist_art = userConfig.default_playlist_art;
-    } else {
-      config.default_playlist_art = "";
-    }
+     Set default artwork, if specified
+     */
+    setArt(userConfig);
 
     /*
       Initialize the visual elements
@@ -589,6 +581,35 @@ let Initializer = (function() {
 			Run after init callback
 		*/
     Callbacks.run("initialized");
+  }
+
+  /**
+   * Sets the default_album_art and default_playlist_art from the
+   * user supplied configuration.
+   *
+   * @access public
+   * @param {object} userConfig - A JSON object of user defined values that help configure and initialize AmplitudeJS.
+   */
+  function setArt(userConfig) {
+    /*
+      If the user defines default album art, this image will display if the active
+      song doesn't have album art defined.
+    */
+    if (userConfig.default_album_art != undefined) {
+      config.default_album_art = userConfig.default_album_art;
+    } else {
+      config.default_album_art = "";
+    }
+
+    /*
+			If the user defines default playlist art, this image will display if the user
+			tries to set up a playlist meta data image tag but doesn't have one defined.
+		*/
+    if (userConfig.default_playlist_art != undefined) {
+      config.default_playlist_art = userConfig.default_playlist_art;
+    } else {
+      config.default_playlist_art = "";
+    }
   }
 
   /**
@@ -687,6 +708,18 @@ let Initializer = (function() {
       if (config.songs[i].live == undefined) {
         config.songs[i].live = false;
       }
+    }
+  }
+
+  /**
+   * Initializes the index of the song in the songs array so
+   * we can reference it if needed
+   *
+   * @access private
+   */
+  function initializeDefaultSongIndexes() {
+    for (let i = 0; i < config.songs.length; i++) {
+      config.songs[i].index = i;
     }
   }
 
